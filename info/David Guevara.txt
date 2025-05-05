@@ -1,0 +1,54 @@
+David Guevara
+
+RNA seq is when you extract RNA from cells, then read it
+ - File of sequences of DNA letters AUGC
+ - Based on the cells under different conditions
+    - High/low heat, virus from wild or infecting someone
+ - Sorted in different colors 
+
+In .tsv or .csv format
+ - combine all experiments together, each column one experiment (0 if not found in experiment) - top row named gene
+    - Each row a different sequence
+
+Second file is combination of others
+ - first two are name, last is name with .tar.gz
+ - Third is type of experiment, (control, type
+of treatment)
+
+Use count_matrix (raw data) .txt file, not BED format or normalized
+
+- two samples from one cell, 
+
+Some genes (rows) have X, are just a number (or gene000), or DNA sequences, remove them
+ - other formats of file may have raw counts
+
+If entire file contains them, mark as generic
+
+Up to Escherichia_coli (pink column two (M) has been done
+
+Must have gene IDs, or not usable
+
+Keep track of time spent
+
+24 experiments left in 2nd column (try to finish by Wednesday)
+
+
+DISCORD:
+Transform all files (single or multiple files) into comma separated file with read (transcript/RNA molecule) counts, and it should be named as counts.txt. The first column must be named as Gene.
+If there are repeated IDs, but it's an X, get rid of the X rows. If there are multiple repeated IDs, let me know.
+If the IDs are just a number or gene###, ignore that and color the cell in the Excel file.
+Accepted IDs would be gene symbols like PLAGL1,  AGPAT4, or ENSEMBL IDs like ENSOARG00020003627 (they start with ENS always).
+If the numbers are float (unless it's .0) instead of integers, then it's not usable. Color them as well. 
+There might be multiple files for download. They must be TXT/CSV/TSV. Some of them might be the normalized/FPKM/TPM/RPKM version and, in the same experiment, there might be the file with the actual raw counts.
+Start from Gallus gallus vs Marek's disease virus (row 286), second column.
+Some experiments might be found in other rows too. If so, you only need to do the conversion once.
+Skip colored cells.
+
+
+
+Notes:
+Need input for:
+ - 278036?
+
+
+
