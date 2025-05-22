@@ -1,65 +1,17 @@
 SampleColumn	Replication	Identifier	File
-GSE155925_Case 1	GSE155925_Case 1		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 2	GSE155925_Case 2		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 3	GSE155925_Case 3		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 4	GSE155925_Case 4		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 5	GSE155925_Case 5		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 6	GSE155925_Case 6		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 7	GSE155925_Case 7		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 8	GSE155925_Case 8		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 9	GSE155925_Case 9		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 10	GSE155925_Case 10		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 11	GSE155925_Case 11		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 12	GSE155925_Case 12		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 13	GSE155925_Case 13		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 14	GSE155925_Case 14		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 15	GSE155925_Case 15		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 16	GSE155925_Case 16		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 17	GSE155925_Case 17		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 18	GSE155925_Case 18		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 19	GSE155925_Case 19		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 20	GSE155925_Case 20		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 21	GSE155925_Case 21		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 22	GSE155925_Case 22		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 23	GSE155925_Case 23		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 24	GSE155925_Case 24		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 25	GSE155925_Case 25		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 26	GSE155925_Case 26		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 27	GSE155925_Case 27		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 28	GSE155925_Case 28		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 29	GSE155925_Case 29		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 30	GSE155925_Case 30		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 31	GSE155925_Case 31		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 32	GSE155925_Case 32		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 33	GSE155925_Case 33		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 34	GSE155925_Case 34		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 35	GSE155925_Case 35		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 36	GSE155925_Case 36		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 37	GSE155925_Case 37		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 38	GSE155925_Case 38		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 39	GSE155925_Case 39		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 40	GSE155925_Case 40		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 41	GSE155925_Case 41		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 42	GSE155925_Case 42		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 43	GSE155925_Case 43		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 44	GSE155925_Case 44		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 45	GSE155925_Case 45		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 46	GSE155925_Case 46		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 47	GSE155925_Case 47		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 48	GSE155925_Case 48		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 49	GSE155925_Case 49		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 50	GSE155925_Case 50		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 51	GSE155925_Case 51		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 52	GSE155925_Case 52		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 53	GSE155925_Case 53		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 54	GSE155925_Case 54		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 55	GSE155925_Case 55		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 56	GSE155925_Case 56		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 57	GSE155925_Case 57		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 58	GSE155925_Case 58		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 59	GSE155925_Case 59		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 60	GSE155925_Case 60		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 61	GSE155925_Case 61		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 62	GSE155925_Case 62		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 63	GSE155925_Case 63		GSE155925_Raw_counts_matrix.txt.gz
-GSE155925_Case 64	GSE155925_Case 64		GSE155925_Raw_counts_matrix.txt.gz
+GSE130124_gene_id	GSE130124_gene_id		GSE130124_Counts.txt.gz
+GSE130124_L80	GSE130124_L80		GSE130124_Counts.txt.gz
+GSE130124_L77	GSE130124_L77		GSE130124_Counts.txt.gz
+GSE130124_L39A	GSE130124_L39A		GSE130124_Counts.txt.gz
+GSE130124_L40A	GSE130124_L40A		GSE130124_Counts.txt.gz
+GSE130124_L82	GSE130124_L82		GSE130124_Counts.txt.gz
+GSE130124_L44A	GSE130124_L44A		GSE130124_Counts.txt.gz
+GSE130124_L78	GSE130124_L78		GSE130124_Counts.txt.gz
+GSE130124_L41A	GSE130124_L41A		GSE130124_Counts.txt.gz
+GSE130124_L47A	GSE130124_L47A		GSE130124_Counts.txt.gz
+GSE130124_L66A	GSE130124_L66A		GSE130124_Counts.txt.gz
+GSE130124_L43A	GSE130124_L43A		GSE130124_Counts.txt.gz
+GSE130124_L65A	GSE130124_L65A		GSE130124_Counts.txt.gz
+GSE130124_L83	GSE130124_L83		GSE130124_Counts.txt.gz
+GSE130124_L42A	GSE130124_L42A		GSE130124_Counts.txt.gz
+GSE130124_L61A	GSE130124_L61A		GSE130124_Counts.txt.gz

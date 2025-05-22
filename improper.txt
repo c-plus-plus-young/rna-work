@@ -1,1 +1,6 @@
 Identifier	File
+no_feature	GSE130124
+ambiguous	GSE130124
+too_low_aQual	GSE130124
+not_aligned	GSE130124
+alignment_not_unique	GSE130124

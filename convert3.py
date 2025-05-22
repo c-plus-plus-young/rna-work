@@ -2,7 +2,7 @@ import pandas as pd
 import gzip
 from pathlib import Path
 # for beep sound, not needed for functionality
-import winsound
+# import winsound
 
 # Paths
 data_root = Path("data")
@@ -15,7 +15,7 @@ def is_excluded(col):
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol',
-                  'entrezid', 'refseq', 'genename']
+                  'entrezid', 'refseq', 'genename', 'idtranscript']
     return any(x in col.lower() for x in exclusions)
 # Helper: smart decode
 # manually change? depending on if .csv or .txt
@@ -162,7 +162,7 @@ for gene in all_genes:
     rows.append(row)
 
 pd.DataFrame(rows, columns=["Gene"] + column_order).to_csv(output_counts, sep=",", index=False)
-winsound.Beep(1500, 500)  # Frequency in Hz, Duration in milliseconds
+# winsound.Beep(1500, 500)  # Frequency in Hz, Duration in milliseconds
 
 print("✅ All done!")
 
