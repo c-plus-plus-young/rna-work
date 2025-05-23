@@ -16,7 +16,7 @@ def is_excluded(col):
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol',
-                  'entrezid', 'refseq', 'genename', 'idtranscript']
+                  'entrezid', 'refseq', 'genename', 'idtranscript', 'length']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -109,7 +109,7 @@ def process_file(file, extension):
         if column_id not in column_order:
             column_order.append(column_id)
         input_rows.append([
-            column_id,          # SampleColumn (1st)
+            column_id,          # SampleColumn (1st)        col = col.split(':')[0]
             column_id,          # Replication
             identifier_value,   # Identifier from "names" column
             file.name           # Original file name
@@ -172,6 +172,10 @@ if __name__ == "__main__":
     for gene in all_genes:
         row = [gene] + [counts[gene].get(col, 0) for col in column_order]
         rows.append(row)
+
+    print(column_order)
+    for x in range(len(column_order)):
+        column_order[x] = column_order[x].split(':')[0].split('_')[0]
 
     pd.DataFrame(rows, columns=["Gene"] + column_order).to_csv(output_counts, sep=",", index=False)
     # winsound.Beep(1500, 500)  # Frequency in Hz, Duration in milliseconds
