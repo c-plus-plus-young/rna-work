@@ -1,5 +1,4 @@
 SampleColumn	Replication	Identifier	File
-GSE130124_gene_id	GSE130124_gene_id		GSE130124_Counts.txt.gz
 GSE130124_L80	GSE130124_L80		GSE130124_Counts.txt.gz
 GSE130124_L77	GSE130124_L77		GSE130124_Counts.txt.gz
 GSE130124_L39A	GSE130124_L39A		GSE130124_Counts.txt.gz
