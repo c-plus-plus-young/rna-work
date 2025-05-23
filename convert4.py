@@ -8,7 +8,8 @@ from pathlib import Path
 data_folder = Path("data")
 output_input = "input.txt"
 output_counts = "counts.txt"
-improper_rows = "improper.txt"
+improper_rows = "improper_rows.txt"
+improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
@@ -37,6 +38,9 @@ def read_compressed_file(path, extension):
     header = lines[0].strip().split(split_char)
     header = ['gene_id'] + header[1:]
 
+    # Number of columns
+    number_of_cols = len(header)
+
     # Read file into DataFrame
     if extension == "xlsx":     
         # Special file handling for Excel
@@ -52,6 +56,7 @@ def read_compressed_file(path, extension):
     else:
         from io import StringIO
         df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
         # Clean headers
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
@@ -61,7 +66,8 @@ def read_compressed_file(path, extension):
 # Accumulators
 input_rows = []
 counts = {}
-improper = []
+improper_column = []
+improper_row = []
 all_genes = []
 column_order = []
 
@@ -85,9 +91,11 @@ def process_file(file, extension):
         return
 
     data_file.columns = data_file.columns.str.strip()
+    # Gene identifier is likely first column, 0
     gene_col = data_file.columns[0]
+    # Value columns are all other columns
     value_cols = [col for col in data_file.columns[1:] if not is_excluded(col)]
-
+    improper_column = [col for col in data_file.columns[1:] if is_excluded(col)]
     # Identify the "names" column (case-insensitive match)
     names_col_candidates = [col for col in data_file.columns if 'name' in col.lower()]
     names_col = names_col_candidates[0] if names_col_candidates else None
@@ -115,7 +123,8 @@ def process_file(file, extension):
 
         # If formatted weird with colon
         # identifier = identifier.split(":")[1]
-        if identifier.replace("\"", "").startswith("ENS"):
+        # if identifier.replace("\"", "").startswith("ENS"): ⚠️ 
+        if not identifier.replace("\"", "").startswith("12345678901234"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
@@ -123,14 +132,13 @@ def process_file(file, extension):
                 column_id = f"{sample_name}_{col}"
                 val = str(row.get(col, ""))
                 try:
-                    # counts[identifier][column_id] = int(float(val))
                     # below is to combine data. Likely not necessary
                     counts[identifier][column_id] = counts[identifier].get(column_id, 0) + int(float(val))
                 except ValueError:
                     print("NAN error in line " + row + " column " + col)
                     counts[identifier][column_id] = 0
         else:
-            improper.append((identifier, sample_name))
+            improper_row.append((identifier, sample_name))
 
 if __name__ == "__main__":
     # manually change? depending on if .txt or .csv
@@ -147,10 +155,16 @@ if __name__ == "__main__":
     pd.DataFrame(input_rows, columns=["SampleColumn", "Replication", "Identifier", "File"]) \
         .to_csv(output_input, sep="\t", index=False)
 
-    # Write improper.txt
+    # Write improper_column.txt
+    with open(improper_columns, 'w', encoding='utf-8') as f:
+        f.write("Identifier\tFile\n")
+        for row in improper_column:
+            f.write(f"{row[0]}\t{row[1]}\n")
+
+    # Write improper_row.txt
     with open(improper_rows, 'w', encoding='utf-8') as f:
         f.write("Identifier\tFile\n")
-        for row in improper:
+        for row in improper_row:
             f.write(f"{row[0]}\t{row[1]}\n")
 
     # Write counts.txt
