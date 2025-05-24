@@ -15,37 +15,29 @@ improper_columns = "improper_columns.txt"
 def is_excluded(col):
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
-                  'description', 'fpkm', 'ensembl', 'symbol',
-                  'entrezid', 'refseq', 'genename', 'idtranscript', 'length']
+                  'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
+                  'entrezid', 'refseq', 'genename', 'idtranscript', 'length', 'class',
+                  'family', 'kegg', 'eggnog',]
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
-
-    if extension == "txt" or extension == "tsv":
-        split_char = "\t"
-    else:
-        split_char = ","
-
-    try:
-        with gzip.open(path, 'rt', encoding='utf-8') as f:
-            lines = f.readlines()
-    except UnicodeDecodeError:
-        print("Error, file not utf-8. Opening as utf-16")
-        with gzip.open(path, 'rt', encoding='utf-16') as f:
-            lines = f.readlines()
-
-    # If first line has no gene_id, insert it
-    header = lines[0].strip().split(split_char)
-    header = ['gene_id'] + header[1:]
-
-    # Number of columns
-    number_of_cols = len(header)
 
     # Read file into DataFrame
     if extension == "xlsx":     
         # Special file handling for Excel
         # Load the Excel file into a DataFrame
-        df = pd.read_excel(path, dtype=str)
+        df = pd.read_excel(path, dtype=str, engine='openpyxl')
+
+        # Rename first column gene_id
+        df.columns = ['gene_id'] + list(df.columns[1:])
+
+        # Clean headers
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        return df
+    elif extension == "xls":
+        # Special file handling for old Excel format
+        # Load the Excel file into a DataFrame
+        df = pd.read_csv(path, dtype=str, sep='\t')
 
         # Rename first column gene_id
         df.columns = ['gene_id'] + list(df.columns[1:])
@@ -54,12 +46,33 @@ def read_compressed_file(path, extension):
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         return df
     else:
+        if extension == "txt" or extension == "tsv":
+            split_char = "\t"
+        else:
+            split_char = ","
+        print(split_char)
+        try:
+            with gzip.open(path, 'rt', encoding='utf-8') as f:
+                lines = f.readlines()
+        except UnicodeDecodeError:
+            print("Error, file not utf-8. Opening as utf-16")
+            with gzip.open(path, 'rt', encoding='utf-16') as f:
+                lines = f.readlines()
+
+        # If first line has no gene_id, insert it
+        header = lines[0].strip().split(split_char)
+        header = ['gene_id'] + header[1:]
+
+        # Number of columns
+        number_of_cols = len(header)
+
         from io import StringIO
         df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
         # Clean headers
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
+        print(df)
         return df
 
 
@@ -95,7 +108,9 @@ def process_file(file, extension):
     gene_col = data_file.columns[0]
     # Value columns are all other columns
     value_cols = [col for col in data_file.columns[1:] if not is_excluded(col)]
-    improper_column = [col for col in data_file.columns[1:] if is_excluded(col)]
+    # improper_column_list = [col for col in data_file.columns[1:] if is_excluded(col)]
+    # for item in improper_column_list:
+    #     improper_column.append(item)
     # Identify the "names" column (case-insensitive match)
     names_col_candidates = [col for col in data_file.columns if 'name' in col.lower()]
     names_col = names_col_candidates[0] if names_col_candidates else None
@@ -122,9 +137,9 @@ def process_file(file, extension):
             continue
 
         # If formatted weird with colon
-        # identifier = identifier.split(":")[1]
-        # if identifier.replace("\"", "").startswith("ENS"): ⚠️ 
-        if not identifier.replace("\"", "").startswith("12345678901234"):
+        # identifier = identifier.split(":")[1] ⚠️ 
+        # if identifier.replace("\"", "").startswith("ENS"): 
+        if not identifier.replace("\"", "").startswith("17"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
@@ -146,6 +161,8 @@ if __name__ == "__main__":
         process_file(file, "tsv")
     for file in sorted(data_folder.glob("*.xlsx")):
         process_file(file, "xlsx")
+    for file in sorted(data_folder.glob("*.xls")):
+        process_file(file, "xls")
     for file in sorted(data_folder.glob("*.csv.gz")):
         process_file(file, "csv")
     for file in sorted(data_folder.glob("*.txt.gz")):
@@ -173,9 +190,9 @@ if __name__ == "__main__":
         row = [gene] + [counts[gene].get(col, 0) for col in column_order]
         rows.append(row)
 
-    print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].split(':')[0].split('_')[0]
+        column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
+    print(column_order)
 
     pd.DataFrame(rows, columns=["Gene"] + column_order).to_csv(output_counts, sep=",", index=False)
     # winsound.Beep(1500, 500)  # Frequency in Hz, Duration in milliseconds
