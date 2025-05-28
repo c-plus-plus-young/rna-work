@@ -17,7 +17,8 @@ def is_excluded(col):
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
                   'entrezid', 'refseq', 'genename', 'idtranscript', 'length', 'class',
-                  'family', 'kegg', 'eggnog',]
+                  'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
+                  'e5vscal', 'e5vsdc', 'type']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -68,9 +69,10 @@ def read_compressed_file(path, extension):
 
         from io import StringIO
         df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
         # Clean headers
-        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        df.columns = ['gene_id'] + df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
         print(df)
         return df
@@ -139,7 +141,7 @@ def process_file(file, extension):
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
         # if identifier.replace("\"", "").startswith("ENS"): 
-        if not identifier.replace("\"", "").startswith("17"):
+        if not identifier.replace("\"", "").startswith("17.5"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
@@ -150,7 +152,7 @@ def process_file(file, extension):
                     # below is to combine data. Likely not necessary
                     counts[identifier][column_id] = counts[identifier].get(column_id, 0) + int(float(val))
                 except ValueError:
-                    print("NAN error in line " + row + " column " + col)
+                    # print("NAN error in line " + row + " column " + col)
                     counts[identifier][column_id] = 0
         else:
             improper_row.append((identifier, sample_name))
@@ -169,8 +171,7 @@ if __name__ == "__main__":
         process_file(file, "txt")
 
     # # Write input.txt
-    pd.DataFrame(input_rows, columns=["SampleColumn", "Replication", "Identifier", "File"]) \
-        .to_csv(output_input, sep="\t", index=False)
+    pd.DataFrame(input_rows, columns=["SampleColumn", "Replication", "Identifier", "File"]).to_csv(output_input, sep="\t", index=False)
 
     # Write improper_column.txt
     with open(improper_columns, 'w', encoding='utf-8') as f:
@@ -190,8 +191,11 @@ if __name__ == "__main__":
         row = [gene] + [counts[gene].get(col, 0) for col in column_order]
         rows.append(row)
 
+    print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
+        column_order[x] = column_order[x].replace("-", "_")
+        # column_order[x] = column_order[x].replace("GSE17900", "")
+        # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
 
     pd.DataFrame(rows, columns=["Gene"] + column_order).to_csv(output_counts, sep=",", index=False)
