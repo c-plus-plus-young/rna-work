@@ -18,7 +18,7 @@ def is_excluded(col):
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
                   'entrezid', 'refseq', 'genename', 'idtranscript', 'length', 'class',
                   'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
-                  'e5vscal', 'e5vsdc', 'type']
+                  'e5vscal', 'e5vsdc', 'type', 'chr']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -51,7 +51,6 @@ def read_compressed_file(path, extension):
             split_char = "\t"
         else:
             split_char = ","
-        print(split_char)
         try:
             with gzip.open(path, 'rt', encoding='utf-8') as f:
                 lines = f.readlines()
@@ -67,14 +66,14 @@ def read_compressed_file(path, extension):
         # Number of columns
         number_of_cols = len(header)
 
-        from io import StringIO
-        df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
+        df = pd.read_csv(path, dtype=str, sep=split_char)
+        # from io import StringIO
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
         # Clean headers
         df.columns = ['gene_id'] + df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
-        print(df)
         return df
 
 
@@ -135,6 +134,8 @@ def process_file(file, extension):
     # Process gene counts
     for _, row in data_file.iterrows():
         identifier = str(row[gene_col]).strip()
+        # if identifier.startswith("gene"):
+        #     identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
 
@@ -169,6 +170,8 @@ if __name__ == "__main__":
         process_file(file, "csv")
     for file in sorted(data_folder.glob("*.txt.gz")):
         process_file(file, "txt")
+    for file in sorted(data_folder.glob("*.RCC.gz")):
+        process_file(file, "txt")
 
     # # Write input.txt
     pd.DataFrame(input_rows, columns=["SampleColumn", "Replication", "Identifier", "File"]).to_csv(output_input, sep="\t", index=False)
@@ -193,7 +196,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_")
+        column_order[x] = column_order[x].replace("-", "_").split("/")[-1].split("_")[0]
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
