@@ -18,7 +18,9 @@ def is_excluded(col):
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
                   'entrezid', 'refseq', 'genename', 'idtranscript', 'length', 'class',
                   'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
-                  'e5vscal', 'e5vsdc', 'type', 'chr']
+                  'e5vscal', 'e5vsdc', 'type', 'chr', 'nearest', 'idgene_id', 'pvalue',
+                  'a_vs_b', 'unique', 'region', 'tpm', 'rpkm', 'ensembl', 'unnamed', 
+                  'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -72,7 +74,7 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
         # Clean headers
-        df.columns = ['gene_id'] + df.columns.str.strip().str.replace('"', '', regex=False)
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
         return df
 
@@ -121,7 +123,9 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
-        column_id = f"{sample_name}_{col}"
+        # column_id = f"{sample_name}_{col}"
+        column_id = f"{col}"
+        # column_id = full_name.split(".")[0]
         if column_id not in column_order:
             column_order.append(column_id)
         input_rows.append([
@@ -134,25 +138,29 @@ def process_file(file, extension):
     # Process gene counts
     for _, row in data_file.iterrows():
         identifier = str(row[gene_col]).strip()
-        # if identifier.startswith("gene"):
-        #     identifier = identifier.split(":")[1]
+        if identifier.startswith("gene"):
+            identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
 
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
-        # if identifier.replace("\"", "").startswith("ENS"): 
-        if not identifier.replace("\"", "").startswith("17.5"):
+        if identifier.replace("\"", "").startswith("ENS"): 
+        # if not identifier.replace("\"", "").startswith("ssc"):
+        # if not identifier.replace("\"", "").startswith("17.5"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{sample_name}_{col}"
+                column_id = f"{col}"
+                # column_id = f"{sample_name}_{col}"
                 val = str(row.get(col, ""))
+                # if val.isdigit:
                 try:
                     # below is to combine data. Likely not necessary
                     counts[identifier][column_id] = counts[identifier].get(column_id, 0) + int(float(val))
                 except ValueError:
+                # else:
                     # print("NAN error in line " + row + " column " + col)
                     counts[identifier][column_id] = 0
         else:
@@ -196,7 +204,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_").split("/")[-1].split("_")[0]
+        column_order[x] = column_order[x].replace("-", "_")
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
