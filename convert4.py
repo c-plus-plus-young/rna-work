@@ -50,7 +50,7 @@ def read_compressed_file(path, extension):
         return df
     else:
         if extension == "txt" or extension == "tsv":
-            split_char = "\t"
+            split_char = " "
         else:
             split_char = ","
         try:
@@ -91,6 +91,7 @@ def process_file(file, extension):
     full_name = file.stem  # without .gz
     name_parts = full_name.split('_')
     sample_name = name_parts[0] if name_parts else full_name
+    sample_name = full_name
 
     print(f"📄 Processing: {file.name}")
 
@@ -123,8 +124,9 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
+        column_id = f"{sample_name}"
         # column_id = f"{sample_name}_{col}"
-        column_id = f"{col}"
+        # column_id = f"{col}"
         # column_id = full_name.split(".")[0]
         if column_id not in column_order:
             column_order.append(column_id)
@@ -145,14 +147,15 @@ def process_file(file, extension):
 
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
-        if identifier.replace("\"", "").startswith("ENS"): 
-        # if not identifier.replace("\"", "").startswith("ssc"):
+        # if identifier.replace("\"", "").startswith("ENS"): 
+        if not identifier.replace("\"", "").startswith("ssc"):
         # if not identifier.replace("\"", "").startswith("17.5"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{col}"
+                column_id = f"{sample_name}"
+                # column_id = f"{col}"
                 # column_id = f"{sample_name}_{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
@@ -204,7 +207,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_")
+        column_order[x] = column_order[x].replace("-", "_").replace("_counts.txt", "")
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
