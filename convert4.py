@@ -20,7 +20,8 @@ def is_excluded(col):
                   'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
                   'e5vscal', 'e5vsdc', 'type', 'chr', 'nearest', 'idgene_id', 'pvalue',
                   'a_vs_b', 'unique', 'region', 'tpm', 'rpkm', 'ensembl', 'unnamed', 
-                  'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron']
+                  'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron',
+                  'gene_type', 'expression', "gene-name"]
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -50,7 +51,7 @@ def read_compressed_file(path, extension):
         return df
     else:
         if extension == "txt" or extension == "tsv":
-            split_char = " "
+            split_char = "\t"
         else:
             split_char = ","
         try:
@@ -69,7 +70,7 @@ def read_compressed_file(path, extension):
         number_of_cols = len(header)
 
         df = pd.read_csv(path, dtype=str, sep=split_char)
-        # from io import StringIO
+        from io import StringIO
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
@@ -124,9 +125,10 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
-        column_id = f"{sample_name}"
+        # column_id = f"{sample_name}"
+        # sample_name = sample_name.split("_")[0]
         # column_id = f"{sample_name}_{col}"
-        # column_id = f"{col}"
+        column_id = f"{col}"
         # column_id = full_name.split(".")[0]
         if column_id not in column_order:
             column_order.append(column_id)
@@ -144,6 +146,7 @@ def process_file(file, extension):
             identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
+        identifier = identifier.split(",")[0]
 
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
@@ -154,8 +157,8 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{sample_name}"
-                # column_id = f"{col}"
+                # column_id = f"{sample_name}"
+                column_id = f"{col}"
                 # column_id = f"{sample_name}_{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
@@ -207,7 +210,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_").replace("_counts.txt", "")
+        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "")
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
