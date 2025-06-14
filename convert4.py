@@ -117,7 +117,7 @@ def process_file(file, extension):
     # Gene identifier is likely first column, 0
     gene_col = data_file.columns[0]
     # Value columns are all other columns
-    value_cols = [col for col in data_file.columns[0:]]
+    value_cols = [col for col in data_file.columns[1:]]
     # improper_column_list = [col for col in data_file.columns[1:] if is_excluded(col)]
     # for item in improper_column_list:
     #     improper_column.append(item)
