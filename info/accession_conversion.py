@@ -16,7 +16,7 @@
 input = open("old_input.txt")
 input.readline()
 
-filename = "GSE177040_Haeder_etal_counts.tsv.gz"
+filename = "GSE234489_readcounts_hg19.tsv.gz"
 
 print("SampleColumn" + "\t" + "Replication" + "\t" + "Identifier" + "\t" + "File")
 for line in input:

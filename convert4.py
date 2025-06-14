@@ -16,16 +16,19 @@ def is_excluded(col):
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
-                  'entrezid', 'refseq', 'genename', 'idtranscript', 'length', 'class',
+                  'entrez', 'refseq', 'genename', 'idtranscript', 'length', 'class',
                   'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
                   'e5vscal', 'e5vsdc', 'type', 'chr', 'nearest', 'idgene_id', 'pvalue',
                   'a_vs_b', 'unique', 'region', 'tpm', 'rpkm', 'ensembl', 'unnamed', 
                   'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron',
-                  'gene_type', 'expression', "gene-name"]
+                  'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
+                  'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
+                  'Gene Name', 'Gene Alias', 'pos', 'geneid']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
-
+    # filename = str(path).split("/")[-1]
+    # print(filename)
     # Read file into DataFrame
     if extension == "xlsx":     
         # Special file handling for Excel
@@ -63,18 +66,20 @@ def read_compressed_file(path, extension):
                 lines = f.readlines()
 
         # If first line has no gene_id, insert it
-        header = lines[0].strip().split(split_char)
-        header = ['gene_id'] + header[1:]
+        header = lines[2].strip().split(split_char)
+        header = ['gene_id'] + header[0:]
 
         # Number of columns
         number_of_cols = len(header)
 
-        df = pd.read_csv(path, dtype=str, sep=split_char)
+        
         from io import StringIO
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str)
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols))
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=2, usecols=range(1,number_of_cols))
         # Clean headers
+        df = pd.read_csv(path, dtype=str, sep=split_char)
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         # print(df.columns.tolist())
         return df
@@ -108,16 +113,16 @@ def process_file(file, extension):
         print(f"⚠️ Skipping empty or invalid: {file.name}")
         return
 
-    data_file.columns = data_file.columns.str.strip()
+    # data_file.columns = data_file.columns.str.strip()
     # Gene identifier is likely first column, 0
     gene_col = data_file.columns[0]
     # Value columns are all other columns
-    value_cols = [col for col in data_file.columns[1:] if not is_excluded(col)]
+    value_cols = [col for col in data_file.columns[0:]]
     # improper_column_list = [col for col in data_file.columns[1:] if is_excluded(col)]
     # for item in improper_column_list:
     #     improper_column.append(item)
     # Identify the "names" column (case-insensitive match)
-    names_col_candidates = [col for col in data_file.columns if 'name' in col.lower()]
+    names_col_candidates = []
     names_col = names_col_candidates[0] if names_col_candidates else None
     identifier_value = ""
     if names_col and names_col in data_file.columns:
@@ -125,10 +130,10 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
-        # column_id = f"{sample_name}"
+        column_id = f"{sample_name}"
         # sample_name = sample_name.split("_")[0]
         # column_id = f"{sample_name}_{col}"
-        column_id = f"{col}"
+        # column_id = f"{col}"
         # column_id = full_name.split(".")[0]
         if column_id not in column_order:
             column_order.append(column_id)
@@ -146,19 +151,19 @@ def process_file(file, extension):
             identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
-        identifier = identifier.split(",")[0]
+        identifier = identifier.split("|")[-1]
 
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
         # if identifier.replace("\"", "").startswith("ENS"): 
-        if not identifier.replace("\"", "").startswith("ssc"):
+        if not identifier.replace("\"", "").startswith("ssc") and not identifier.replace("\"", "").startswith("ERCC") and not identifier.replace("\"", "").startswith("novel"):
         # if not identifier.replace("\"", "").startswith("17.5"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                # column_id = f"{sample_name}"
-                column_id = f"{col}"
+                column_id = f"{sample_name}"
+                # column_id = f"{col}"
                 # column_id = f"{sample_name}_{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
@@ -186,6 +191,10 @@ if __name__ == "__main__":
         process_file(file, "txt")
     for file in sorted(data_folder.glob("*.RCC.gz")):
         process_file(file, "txt")
+    for file in sorted(data_folder.glob("*.tab.gz")):
+        process_file(file, "tsv")
+    for file in sorted(data_folder.glob("*.gct.gz")):
+        process_file(file, "tsv")
 
     # # Write input.txt
     pd.DataFrame(input_rows, columns=["SampleColumn", "Replication", "Identifier", "File"]).to_csv(output_input, sep="\t", index=False)
@@ -201,8 +210,6 @@ if __name__ == "__main__":
         f.write("Identifier\tFile\n")
         for row in improper_row:
             f.write(f"{row[0]}\t{row[1]}\n")
-
-    # Write counts.txt
     rows = []
     for gene in all_genes:
         row = [gene] + [counts[gene].get(col, 0) for col in column_order]
@@ -210,7 +217,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "")
+        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "").replace(".out", "").replace(".tab", "").replace(".hg38.bed.anno.count", "").replace(".count", "")
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
