@@ -27,8 +27,6 @@ def is_excluded(col):
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
-    # filename = str(path).split("/")[-1]
-    # print(filename)
     # Read file into DataFrame
     if extension == "xlsx":     
         # Special file handling for Excel
@@ -66,23 +64,28 @@ def read_compressed_file(path, extension):
                 lines = f.readlines()
 
         # If first line has no gene_id, insert it
-        header = lines[2].strip().split(split_char)
+        header = lines[0].strip().split(split_char)
         header = ['gene_id'] + header[0:]
 
         # Number of columns
         number_of_cols = len(header)
-
         
         from io import StringIO
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
-        # This one:
+        
+        # This one is best if there are no headers:
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
+
+        # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
+        
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=2, usecols=range(1,number_of_cols))
-        # Clean headers
+        
+        # This is the best one for most data files
         df = pd.read_csv(path, dtype=str, sep=split_char)
+        # Clean headers comment this out if you comment out the one above
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
-        # print(df.columns.tolist())
+        
         return df
 
 
@@ -115,6 +118,7 @@ def process_file(file, extension):
         return
 
     # data_file.columns = data_file.columns.str.strip()
+
     # Gene identifier is likely first column, 0
     gene_col = data_file.columns[0]
     # Value columns are all other columns
@@ -149,13 +153,40 @@ def process_file(file, extension):
             identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
-        identifier = identifier.split("|")[-1]
 
         # If formatted weird with colon
-        # identifier = identifier.split(":")[1] ⚠️ 
-        # if identifier.replace("\"", "").startswith("ENS"): 
-        if not identifier.replace("\"", "").startswith("ssc") and not identifier.replace("\"", "").startswith("ERCC") and not identifier.replace("\"", "").startswith("novel") and not identifier.replace("\"", "").startswith("CTRG"):
-        # if not identifier.replace("\"", "").startswith("17.5"):
+        # identifier = identifier.split(":")[1] 
+        if (not identifier.replace("\"", "").startswith("ssc") 
+            and not identifier.replace("\"", "").startswith("ERCC") 
+            and not identifier.replace("\"", "").startswith("novel") 
+            and not identifier.replace("\"", "").startswith("CTRG") 
+            and not identifier.replace("\"", "").startswith("TERG")
+            and not identifier.replace("\"", "").startswith("17.5")
+            and not identifier.replace("\"", "").startswith("__no_feature") 
+            and not identifier.replace("\"", "").startswith("__ambiguous") 
+            and not identifier.replace("\"", "").startswith("__too_low") 
+            and not identifier.replace("\"", "").startswith("__not_aligned")
+            and not identifier.replace("\"", "").startswith("__alignment")
+            and not identifier.replace("\"", "").startswith("3")
+            and not identifier.replace("\"", "").startswith("5-H") 
+            and not identifier.replace("\"", "").startswith("bA") 
+            and not identifier.replace("\"", "").startswith("RPX-") 
+            and not identifier.replace("\"", "").startswith("LINC")
+            and not identifier.replace("\"", "").startswith("LOC")
+            and not identifier.replace("\"", "").startswith("XLOC")
+            and not identifier.replace("\"", "").startswith("MIR") 
+            and not identifier.replace("\"", "").startswith("TRNA")
+            and not identifier.replace("\"", "").startswith("SNORD")
+            and not identifier.replace("\"", "").startswith("SNORA")
+            and not identifier.replace("\"", "").startswith("GS1-")
+            and not identifier.replace("\"", "").startswith("RP11-")
+            and not ("orf") in identifier):
+
+            identifier = identifier.split("|")[-1].replace("\"", "")
+
+            if identifier.split(".")[-1].isdigit:
+                identifier = identifier.split(".")[0]
+
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
@@ -169,7 +200,7 @@ def process_file(file, extension):
                     counts[identifier][column_id] = counts[identifier].get(column_id, 0) + int(float(val))
                 except ValueError:
                 # else:
-                    # print("NAN error in line " + row + " column " + col)
+                    print("NAN error in line " + row + " column " + col)
                     counts[identifier][column_id] = 0
         else:
             improper_row.append((identifier, sample_name))
@@ -214,7 +245,13 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "").replace(".out", "").replace(".tab", "").replace(".hg38.bed.anno.count", "").replace(".count", "").replace(".stats", "")
+        column_order[x] = (column_order[x].replace("-", "_")
+                           .replace(".csv", "").replace(".txt", "")
+                           .replace(".tsv", "").replace(" Read Count", "")
+                           .replace(".out", "").replace(".tab", "")
+                           .replace(".hg38.bed.anno.count", "")
+                           .replace(".count", "").replace(".stats", "")
+                           .replace("\"", ""))
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
