@@ -75,6 +75,7 @@ def read_compressed_file(path, extension):
         
         from io import StringIO
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
+        # This one:
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=2, usecols=range(1,number_of_cols))
@@ -130,11 +131,8 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
-        column_id = f"{sample_name}"
-        # sample_name = sample_name.split("_")[0]
-        # column_id = f"{sample_name}_{col}"
-        # column_id = f"{col}"
-        # column_id = full_name.split(".")[0]
+        # column_id = f"{sample_name}"
+        column_id = f"{col}"
         if column_id not in column_order:
             column_order.append(column_id)
         input_rows.append([
@@ -156,15 +154,14 @@ def process_file(file, extension):
         # If formatted weird with colon
         # identifier = identifier.split(":")[1] ⚠️ 
         # if identifier.replace("\"", "").startswith("ENS"): 
-        if not identifier.replace("\"", "").startswith("ssc") and not identifier.replace("\"", "").startswith("ERCC") and not identifier.replace("\"", "").startswith("novel"):
+        if not identifier.replace("\"", "").startswith("ssc") and not identifier.replace("\"", "").startswith("ERCC") and not identifier.replace("\"", "").startswith("novel") and not identifier.replace("\"", "").startswith("CTRG"):
         # if not identifier.replace("\"", "").startswith("17.5"):
             if identifier not in counts:
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{sample_name}"
-                # column_id = f"{col}"
-                # column_id = f"{sample_name}_{col}"
+                # column_id = f"{sample_name}"
+                column_id = f"{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
                 try:
@@ -217,7 +214,7 @@ if __name__ == "__main__":
 
     print(column_order)
     for x in range(len(column_order)):
-        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "").replace(".out", "").replace(".tab", "").replace(".hg38.bed.anno.count", "").replace(".count", "")
+        column_order[x] = column_order[x].replace("-", "_").replace(".csv", "").replace(".txt", "").replace(".tsv", "").replace(" Read Count", "").replace(".out", "").replace(".tab", "").replace(".hg38.bed.anno.count", "").replace(".count", "").replace(".stats", "")
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
