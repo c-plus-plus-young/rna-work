@@ -23,7 +23,7 @@ def is_excluded(col):
                   'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron',
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
-                  'Gene Name', 'Gene Alias', 'pos', 'geneid']
+                  'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq']
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -122,7 +122,7 @@ def process_file(file, extension):
     # Gene identifier is likely first column, 0
     gene_col = data_file.columns[0]
     # Value columns are all other columns
-    value_cols = [col for col in data_file.columns[1:]]
+    value_cols = [col for col in data_file.columns[1:] if not is_excluded(col)]
     # improper_column_list = [col for col in data_file.columns[1:] if is_excluded(col)]
     # for item in improper_column_list:
     #     improper_column.append(item)
@@ -180,6 +180,7 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("SNORA")
             and not identifier.replace("\"", "").startswith("GS1-")
             and not identifier.replace("\"", "").startswith("RP11-")
+            and not identifier[0].isdigit()
             and not ("orf") in identifier):
 
             identifier = identifier.split("|")[-1].replace("\"", "")
