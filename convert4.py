@@ -13,6 +13,7 @@ improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
+    # may need to add 'go' and 'ec' - but leaving them off bc ec was in infected which is needed
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
@@ -23,7 +24,10 @@ def is_excluded(col):
                   'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron',
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
-                  'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq']
+                  'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq',
+                  'name', 'direction', 'undetermined']
+    if any(x in col.lower() for x in exclusions):
+        print(col)
     return any(x in col.lower() for x in exclusions)
 
 def read_compressed_file(path, extension):
@@ -54,10 +58,12 @@ def read_compressed_file(path, extension):
         if extension == "txt" or extension == "tsv":
             split_char = "\t"
         else:
-            split_char = ","
+            split_char = "\t"
         try:
             with gzip.open(path, 'rt', encoding='utf-8') as f:
                 lines = f.readlines()
+        # except BaseException as e:
+        #     print(e)
         except UnicodeDecodeError:
             print("Error, file not utf-8. Opening as utf-16")
             with gzip.open(path, 'rt', encoding='utf-16') as f:
@@ -69,9 +75,9 @@ def read_compressed_file(path, extension):
 
         # Number of columns
         number_of_cols = len(header)
+        print("Number of columns: " + str(number_of_cols))
         
         from io import StringIO
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
         
         # This one is best if there are no headers:
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
@@ -79,9 +85,13 @@ def read_compressed_file(path, extension):
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
         
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=2, usecols=range(1,number_of_cols))
-        
-        # This is the best one for most data files
+        # If two header rows and two gene ids
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols - 1))
+
+        # Unsure if these are useful
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
+
+        # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
         df = pd.read_csv(path, dtype=str, sep=split_char)
         # Clean headers comment this out if you comment out the one above
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
@@ -135,6 +145,7 @@ def process_file(file, extension):
 
     # Prepare column names and input rows
     for col in value_cols:
+        # Switch to {sample_name} if sample names are filenames
         # column_id = f"{sample_name}"
         column_id = f"{col}"
         if column_id not in column_order:
@@ -149,13 +160,13 @@ def process_file(file, extension):
     # Process gene counts
     for _, row in data_file.iterrows():
         identifier = str(row[gene_col]).strip()
-        if identifier.startswith("gene"):
-            identifier = identifier.split(":")[1]
+        # if identifier.startswith("gene"):
+        #     identifier = identifier.split(":")[1]
         if not identifier or identifier.lower() == gene_col.lower():
             continue
 
         # If formatted weird with colon
-        # identifier = identifier.split(":")[1] 
+        identifier = identifier.split(":")[-1] 
         if (not identifier.replace("\"", "").startswith("ssc") 
             and not identifier.replace("\"", "").startswith("ERCC") 
             and not identifier.replace("\"", "").startswith("novel") 
@@ -180,6 +191,15 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("SNORA")
             and not identifier.replace("\"", "").startswith("GS1-")
             and not identifier.replace("\"", "").startswith("RP11-")
+            and not identifier.replace("\"", "").startswith("hsa")
+            and not identifier.replace("\"", "").startswith("snR")
+            and not identifier.replace("\"", "").startswith("mg")
+            and not identifier.replace("\"", "").startswith("MSTRG")
+            and not "no" in identifier
+            and not "ambiguous" in identifier
+            and not "low" in identifier
+            and not "align" in identifier
+            and not (len(identifier) > 3 and identifier.replace("\"", "").startswith("RP") and identifier[2].isdigit() and identifier[3] == "-")
             and not identifier[0].isdigit()
             and not ("orf") in identifier):
 
@@ -252,7 +272,10 @@ if __name__ == "__main__":
                            .replace(".out", "").replace(".tab", "")
                            .replace(".hg38.bed.anno.count", "")
                            .replace(".count", "").replace(".stats", "")
-                           .replace("\"", ""))
+                           .replace("\"", "").replace(".bam", "")
+                           .replace(".sortedByCoord", "")
+                           .replace(":read count", "").replace(".sam", "")
+                           .replace("filtered", "").split("/")[-1])
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
