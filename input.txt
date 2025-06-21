@@ -1,9 +1,24 @@
 SampleColumn	Replication	Identifier	File
-1	1		GSE61730_Minus_Half_Hour.fastq_human_expression.csv.gz
-1	1		GSE61730_Plus_Half_Hour.fastq_human_expression.csv.gz
-EarlyAminus	EarlyAminus		GSE61730_combined_results_human_minus_median_normalized.csv.gz
-X4hAminus	X4hAminus		GSE61730_combined_results_human_minus_median_normalized.csv.gz
-X24hAminus	X24hAminus		GSE61730_combined_results_human_minus_median_normalized.csv.gz
-EarlyAplus	EarlyAplus		GSE61730_combined_results_human_plus_median_normalized.csv.gz
-X4hAplus	X4hAplus		GSE61730_combined_results_human_plus_median_normalized.csv.gz
-merged_24h_polyAplus	merged_24h_polyAplus		GSE61730_combined_results_human_plus_median_normalized.csv.gz
+null	null		GSE230511_KC34.csv.gz
+il17a	il17a		GSE230511_KC34.csv.gz
+tnfa	tnfa		GSE230511_KC34.csv.gz
+il17a_tnfa	il17a_tnfa		GSE230511_KC34.csv.gz
+diff	diff		GSE230511_KC34.csv.gz
+null	null		GSE230511_KC43.csv.gz
+il17	il17		GSE230511_KC43.csv.gz
+tnf	tnf		GSE230511_KC43.csv.gz
+tnf_il17	tnf_il17		GSE230511_KC43.csv.gz
+il17_sinfkbiz	il17_sinfkbiz		GSE230511_KC43.csv.gz
+tnf_sinfkbiz	tnf_sinfkbiz		GSE230511_KC43.csv.gz
+tnf_il17_sinfkbiz	tnf_il17_sinfkbiz		GSE230511_KC43.csv.gz
+Control media	Control media		GSE230511_KC54.csv.gz
+Control media + IL-17A/TNFa	Control media + IL-17A/TNFa		GSE230511_KC54.csv.gz
+Unstimulated FB CM	Unstimulated FB CM		GSE230511_KC54.csv.gz
+IL-17A/TNF stimulated FB CM	IL-17A/TNF stimulated FB CM		GSE230511_KC54.csv.gz
+IL-17A/TNF stimulated w NFKBIZ KD FB CM	IL-17A/TNF stimulated w NFKBIZ KD FB CM		GSE230511_KC54.csv.gz
+control	control		GSE230511_KC61.csv.gz
+17_TNF	17_TNF		GSE230511_KC61.csv.gz
+Vehicle	Vehicle		GSE230511_KC73.csv.gz
+IL-17A	IL-17A		GSE230511_KC73.csv.gz
+TNFa	TNFa		GSE230511_KC73.csv.gz
+IL-17A & TNFa	IL-17A & TNFa		GSE230511_KC73.csv.gz

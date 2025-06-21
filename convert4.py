@@ -58,7 +58,7 @@ def read_compressed_file(path, extension):
         if extension == "txt" or extension == "tsv":
             split_char = "\t"
         else:
-            split_char = "\t"
+            split_char = ","
         try:
             with gzip.open(path, 'rt', encoding='utf-8') as f:
                 lines = f.readlines()
@@ -166,7 +166,8 @@ def process_file(file, extension):
             continue
 
         # If formatted weird with colon
-        identifier = identifier.split(":")[-1] 
+        identifier = identifier.split(":")[-1]
+        # identifier = identifier.split(",")[0]
         if (not identifier.replace("\"", "").startswith("ssc") 
             and not identifier.replace("\"", "").startswith("ERCC") 
             and not identifier.replace("\"", "").startswith("novel") 

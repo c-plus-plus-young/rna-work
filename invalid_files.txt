@@ -4,6 +4,7 @@ RCC:
 Float not int:
 273835
 136339
+158814
 
 miRna only:
 145954
@@ -13,3 +14,6 @@ Gene IDs are just numbers:
 
 No data files:
 250546 
+
+No human data:
+174036
