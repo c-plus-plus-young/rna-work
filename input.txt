@@ -1,24 +1,10 @@
 SampleColumn	Replication	Identifier	File
-null	null		GSE230511_KC34.csv.gz
-il17a	il17a		GSE230511_KC34.csv.gz
-tnfa	tnfa		GSE230511_KC34.csv.gz
-il17a_tnfa	il17a_tnfa		GSE230511_KC34.csv.gz
-diff	diff		GSE230511_KC34.csv.gz
-null	null		GSE230511_KC43.csv.gz
-il17	il17		GSE230511_KC43.csv.gz
-tnf	tnf		GSE230511_KC43.csv.gz
-tnf_il17	tnf_il17		GSE230511_KC43.csv.gz
-il17_sinfkbiz	il17_sinfkbiz		GSE230511_KC43.csv.gz
-tnf_sinfkbiz	tnf_sinfkbiz		GSE230511_KC43.csv.gz
-tnf_il17_sinfkbiz	tnf_il17_sinfkbiz		GSE230511_KC43.csv.gz
-Control media	Control media		GSE230511_KC54.csv.gz
-Control media + IL-17A/TNFa	Control media + IL-17A/TNFa		GSE230511_KC54.csv.gz
-Unstimulated FB CM	Unstimulated FB CM		GSE230511_KC54.csv.gz
-IL-17A/TNF stimulated FB CM	IL-17A/TNF stimulated FB CM		GSE230511_KC54.csv.gz
-IL-17A/TNF stimulated w NFKBIZ KD FB CM	IL-17A/TNF stimulated w NFKBIZ KD FB CM		GSE230511_KC54.csv.gz
-control	control		GSE230511_KC61.csv.gz
-17_TNF	17_TNF		GSE230511_KC61.csv.gz
-Vehicle	Vehicle		GSE230511_KC73.csv.gz
-IL-17A	IL-17A		GSE230511_KC73.csv.gz
-TNFa	TNFa		GSE230511_KC73.csv.gz
-IL-17A & TNFa	IL-17A & TNFa		GSE230511_KC73.csv.gz
+pOka_WT_1	pOka_WT_1		GSE223957_Processed_data.xlsx
+pOka_WT_2	pOka_WT_2		GSE223957_Processed_data.xlsx
+pOka_WT_3	pOka_WT_3		GSE223957_Processed_data.xlsx
+pOka_M2_1	pOka_M2_1		GSE223957_Processed_data.xlsx
+pOka_M2_2	pOka_M2_2		GSE223957_Processed_data.xlsx
+pOka_M2_3	pOka_M2_3		GSE223957_Processed_data.xlsx
+pOka_M1_1	pOka_M1_1		GSE223957_Processed_data.xlsx
+pOka_M1_2	pOka_M1_2		GSE223957_Processed_data.xlsx
+pOka_M1_3	pOka_M1_3		GSE223957_Processed_data.xlsx

@@ -88,11 +88,11 @@ def read_compressed_file(path, extension):
         # If two header rows and two gene ids
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols - 1))
 
-        # Unsure if these are useful
+        # Unsure if this is useful
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        df = pd.read_csv(path, dtype=str, sep=split_char)
+        df = pd.read_csv(path, dtype=str, sep=split_char, usecols=range(2, number_of_cols-1))
         # Clean headers comment this out if you comment out the one above
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
