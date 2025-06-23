@@ -25,7 +25,7 @@ def is_excluded(col):
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq',
-                  'name', 'direction', 'undetermined']
+                  'name', 'direction', 'undetermined', 'gene']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -75,7 +75,7 @@ def read_compressed_file(path, extension):
 
         # Number of columns
         number_of_cols = len(header)
-        print("Number of columns: " + str(number_of_cols))
+        print("Number of columns: " + str(number_of_cols - 1))
         
         from io import StringIO
         
@@ -92,7 +92,7 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        df = pd.read_csv(path, dtype=str, sep=split_char, usecols=range(2, number_of_cols-1))
+        df = pd.read_csv(path, dtype=str, sep=split_char)
         # Clean headers comment this out if you comment out the one above
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
@@ -167,6 +167,7 @@ def process_file(file, extension):
 
         # If formatted weird with colon
         identifier = identifier.split(":")[-1]
+        identifier = identifier.split("|")[-1]
         # identifier = identifier.split(",")[0]
         if (not identifier.replace("\"", "").startswith("ssc") 
             and not identifier.replace("\"", "").startswith("ERCC") 
@@ -185,6 +186,7 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("RPX-") 
             and not identifier.replace("\"", "").startswith("LINC")
             and not identifier.replace("\"", "").startswith("LOC")
+            and not identifier.replace("\"", "").startswith("loc")
             and not identifier.replace("\"", "").startswith("XLOC")
             and not identifier.replace("\"", "").startswith("MIR") 
             and not identifier.replace("\"", "").startswith("TRNA")
@@ -200,6 +202,8 @@ def process_file(file, extension):
             and not "ambiguous" in identifier
             and not "low" in identifier
             and not "align" in identifier
+            and not "unmapped" in identifier
+            and not "multimapping" in identifier
             and not (len(identifier) > 3 and identifier.replace("\"", "").startswith("RP") and identifier[2].isdigit() and identifier[3] == "-")
             and not identifier[0].isdigit()
             and not ("orf") in identifier):

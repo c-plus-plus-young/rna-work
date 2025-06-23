@@ -1,10 +1,13 @@
 SampleColumn	Replication	Identifier	File
-pOka_WT_1	pOka_WT_1		GSE223957_Processed_data.xlsx
-pOka_WT_2	pOka_WT_2		GSE223957_Processed_data.xlsx
-pOka_WT_3	pOka_WT_3		GSE223957_Processed_data.xlsx
-pOka_M2_1	pOka_M2_1		GSE223957_Processed_data.xlsx
-pOka_M2_2	pOka_M2_2		GSE223957_Processed_data.xlsx
-pOka_M2_3	pOka_M2_3		GSE223957_Processed_data.xlsx
-pOka_M1_1	pOka_M1_1		GSE223957_Processed_data.xlsx
-pOka_M1_2	pOka_M1_2		GSE223957_Processed_data.xlsx
-pOka_M1_3	pOka_M1_3		GSE223957_Processed_data.xlsx
+c1	c1		GSE174317_Siha_genecount_matrix.csv.gz
+c2	c2		GSE174317_Siha_genecount_matrix.csv.gz
+c3	c3		GSE174317_Siha_genecount_matrix.csv.gz
+d1	d1		GSE174317_Siha_genecount_matrix.csv.gz
+d2	d2		GSE174317_Siha_genecount_matrix.csv.gz
+d3	d3		GSE174317_Siha_genecount_matrix.csv.gz
+e1	e1		GSE174317_Siha_genecount_matrix.csv.gz
+e2	e2		GSE174317_Siha_genecount_matrix.csv.gz
+e3	e3		GSE174317_Siha_genecount_matrix.csv.gz
+p1	p1		GSE174317_Siha_genecount_matrix.csv.gz
+p2	p2		GSE174317_Siha_genecount_matrix.csv.gz
+p3	p3		GSE174317_Siha_genecount_matrix.csv.gz
