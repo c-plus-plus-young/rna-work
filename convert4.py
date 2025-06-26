@@ -13,7 +13,7 @@ improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
-    # may need to add 'go' and 'ec' - but leaving them off bc ec was in infected which is needed
+    # may need to add 'gene', 'go', and 'ec' - but leaving them off bc ec was in infected which is needed
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
@@ -25,7 +25,8 @@ def is_excluded(col):
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq',
-                  'name', 'direction', 'undetermined', 'gene']
+                  'name', 'direction', 'undetermined', 'tmm', 'chr', 'null', 'id',
+                  'genome']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -74,13 +75,13 @@ def read_compressed_file(path, extension):
         header = ['gene_id'] + header[0:]
 
         # Number of columns
-        number_of_cols = len(header)
-        print("Number of columns: " + str(number_of_cols - 1))
+        number_of_cols = len(header) - 1
+        print("Number of columns: " + str(number_of_cols))
         
         from io import StringIO
         
         # This one is best if there are no headers:
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
+        df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
@@ -92,9 +93,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        df = pd.read_csv(path, dtype=str, sep=split_char)
-        # Clean headers comment this out if you comment out the one above
-        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        # df = pd.read_csv(path, dtype=str, sep=split_char)
+        # # Clean headers comment this out if you comment out the one above
+        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -146,8 +147,8 @@ def process_file(file, extension):
     # Prepare column names and input rows
     for col in value_cols:
         # Switch to {sample_name} if sample names are filenames
-        # column_id = f"{sample_name}"
-        column_id = f"{col}"
+        column_id = f"{sample_name}"
+        # column_id = f"{col}"
         if column_id not in column_order:
             column_order.append(column_id)
         input_rows.append([
@@ -198,6 +199,7 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("snR")
             and not identifier.replace("\"", "").startswith("mg")
             and not identifier.replace("\"", "").startswith("MSTRG")
+            and not identifier.replace("\"", "").startswith("MERGE")
             and not "no" in identifier
             and not "ambiguous" in identifier
             and not "low" in identifier
@@ -217,8 +219,8 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                # column_id = f"{sample_name}"
-                column_id = f"{col}"
+                column_id = f"{sample_name}"
+                # column_id = f"{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
                 try:
