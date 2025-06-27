@@ -13,20 +13,20 @@ improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
-    # may need to add 'gene', 'go', and 'ec' - but leaving them off bc ec was in infected which is needed
+    # may need to add 'total', 'gene', 'go', 'pos', 'end', and 'ec' - but leaving them off bc ec was in infected which is needed
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
                   'entrez', 'refseq', 'genename', 'idtranscript', 'length', 'class',
-                  'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 'end', 
+                  'family', 'kegg', 'eggnog', 'accid', 'chrom', 'start', 
                   'e5vscal', 'e5vsdc', 'type', 'chr', 'nearest', 'idgene_id', 'pvalue',
                   'a_vs_b', 'unique', 'region', 'tpm', 'rpkm', 'ensembl', 'unnamed', 
                   'expression value', 'exons', 'gene id', 'transcripts', 'exon', 'intron',
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
-                  'Gene Name', 'Gene Alias', 'pos', 'geneid', 'genename', 'refseq',
+                  'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
                   'name', 'direction', 'undetermined', 'tmm', 'chr', 'null', 'id',
-                  'genome']
+                  'genome', 'pos', 'end', 'alias']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -61,6 +61,7 @@ def read_compressed_file(path, extension):
         else:
             split_char = ","
         try:
+            # print("trying utf-8")
             with gzip.open(path, 'rt', encoding='utf-8') as f:
                 lines = f.readlines()
         # except BaseException as e:
@@ -81,7 +82,7 @@ def read_compressed_file(path, extension):
         from io import StringIO
         
         # This one is best if there are no headers:
-        df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=["Gene", str(path).split("/")[-1]])
+        # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
@@ -93,9 +94,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        # df = pd.read_csv(path, dtype=str, sep=split_char)
-        # # Clean headers comment this out if you comment out the one above
-        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        df = pd.read_csv(path, dtype=str, sep=split_char)
+        # Clean headers comment this out if you comment out the one above
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -124,8 +125,11 @@ def process_file(file, extension):
         return
 
     # Skip empty or one-dimensional files
-    if data_file.empty or data_file.shape[1] < 2:
-        print(f"⚠️ Skipping empty or invalid: {file.name}")
+    if data_file.empty:
+        print(f"⚠️ Skipping empty file: {file.name}")
+        return
+    elif data_file.shape[1] < 2:
+        print(f"⚠️ Skipping invalid file (too small): {file.name}")
         return
 
     # data_file.columns = data_file.columns.str.strip()
@@ -149,6 +153,10 @@ def process_file(file, extension):
         # Switch to {sample_name} if sample names are filenames
         column_id = f"{sample_name}"
         # column_id = f"{col}"
+        # if col == "TNFa":
+        #     column_id = f"{col}_{sample_name}"
+        # else:
+        #     column_id = f"{col}"
         if column_id not in column_order:
             column_order.append(column_id)
         input_rows.append([
@@ -200,6 +208,7 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("mg")
             and not identifier.replace("\"", "").startswith("MSTRG")
             and not identifier.replace("\"", "").startswith("MERGE")
+            and not "Rik" in identifier
             and not "no" in identifier
             and not "ambiguous" in identifier
             and not "low" in identifier
@@ -221,6 +230,10 @@ def process_file(file, extension):
             for col in value_cols:
                 column_id = f"{sample_name}"
                 # column_id = f"{col}"
+                # if col == "tnfa":
+                #     column_id = f"{col}_{sample_name}"
+                # else:
+                #     column_id = f"{col}"
                 val = str(row.get(col, ""))
                 # if val.isdigit:
                 try:
@@ -246,7 +259,7 @@ if __name__ == "__main__":
     for file in sorted(data_folder.glob("*.txt.gz")):
         process_file(file, "txt")
     for file in sorted(data_folder.glob("*.RCC.gz")):
-        process_file(file, "txt")
+        process_file(file, "csv")
     for file in sorted(data_folder.glob("*.tab.gz")):
         process_file(file, "tsv")
     for file in sorted(data_folder.glob("*.gct.gz")):
