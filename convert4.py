@@ -169,8 +169,8 @@ def process_file(file, extension):
     # Prepare column names and input rows
     for col in value_cols:
         # Switch to {sample_name} if sample names are filenames
-        column_id = f"{sample_name}"
-        # column_id = f"{col}"
+        # column_id = f"{sample_name}"
+        column_id = f"{col}"
         # if col == "TNFa":
         #     column_id = f"{col}_{sample_name}"
         # else:
@@ -226,6 +226,9 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("mg")
             and not identifier.replace("\"", "").startswith("MSTRG")
             and not identifier.replace("\"", "").startswith("MERGE")
+            and not identifier.replace("\"", "").startswith("NEG")
+            and not identifier.replace("\"", "").startswith("POS")
+            and not identifier == ""
             and not "Rik" in identifier
             and not "no" in identifier
             and not "ambiguous" in identifier
@@ -246,8 +249,8 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{sample_name}"
-                # column_id = f"{col}"
+                # column_id = f"{sample_name}"
+                column_id = f"{col}"
                 # if col == "tnfa":
                 #     column_id = f"{col}_{sample_name}"
                 # else:
