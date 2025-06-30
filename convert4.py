@@ -26,7 +26,7 @@ def is_excluded(col):
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
                   'name', 'direction', 'undetermined', 'tmm', 'chr', 'null', 'id',
-                  'genome', 'pos', 'end', 'alias']
+                  'genome', 'pos', 'end', 'alias', 'accession']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -54,6 +54,24 @@ def read_compressed_file(path, extension):
 
         # Clean headers
         df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        return df
+    elif extension == "rcc":
+        with open(path, 'rt', encoding='utf-8') as f:
+                lines = f.readlines()
+
+        # If first line has no gene_id, insert it
+        header = lines[0].strip().split(",")
+        header = ['gene_id'] + header[0:]
+
+        # Number of columns
+        number_of_cols = len(header) - 1
+        print("Number of columns: " + str(number_of_cols))
+
+        # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
+        df = pd.read_csv(path, dtype=str, sep=",", usecols=range(1, number_of_cols))
+        # Clean headers comment this out if you comment out the one above
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        
         return df
     else:
         if extension == "txt" or extension == "tsv":
@@ -258,8 +276,8 @@ if __name__ == "__main__":
         process_file(file, "csv")
     for file in sorted(data_folder.glob("*.txt.gz")):
         process_file(file, "txt")
-    for file in sorted(data_folder.glob("*.RCC.gz")):
-        process_file(file, "csv")
+    for file in sorted(data_folder.glob("*.RCC")):
+        process_file(file, "rcc")
     for file in sorted(data_folder.glob("*.tab.gz")):
         process_file(file, "tsv")
     for file in sorted(data_folder.glob("*.gct.gz")):

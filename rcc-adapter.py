@@ -2,7 +2,7 @@
 from pathlib import Path
 data_folder = Path("data")
 
-for file in sorted(data_folder.glob("*.RCC.gz")):
+for file in sorted(data_folder.glob("*.RCC")):
     has_hit_start = False
     has_hit_end = False
     with open(file, 'r', encoding='ascii') as f:
