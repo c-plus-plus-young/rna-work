@@ -103,7 +103,7 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
-        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols), skiprows=1, header=None, names=header)
+        # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols + 1), skiprows=1, header=None, names=header)
         
         # If two header rows and two gene ids
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, skiprows=1, usecols=range(1,number_of_cols - 1))
@@ -310,13 +310,16 @@ if __name__ == "__main__":
         column_order[x] = (column_order[x].replace("-", "_")
                            .replace(".csv", "").replace(".txt", "")
                            .replace(".tsv", "").replace(" Read Count", "")
+                           .replace(".tabular", "")
                            .replace(".out", "").replace(".tab", "")
                            .replace(".hg38.bed.anno.count", "")
                            .replace(".count", "").replace(".stats", "")
                            .replace("\"", "").replace(".bam", "")
                            .replace(".sortedByCoord", "")
                            .replace(":read count", "").replace(".sam", "")
-                           .replace("filtered", "").split("/")[-1])
+                           .replace("filtered", "").split("/")[-1]
+                           .replace(".featureCounts", "")
+                           )
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
