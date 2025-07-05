@@ -13,7 +13,7 @@ improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
-    # may need to add 'total', 'gene', 'go', 'pos', 'end', and 'ec' - but leaving them off bc ec was in infected which is needed
+    # may need to add 'total', 'end', 'null', 'gene', 'go', 'pos', 'end', and 'ec' - but leaving them off bc ec was in infected which is needed
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
@@ -25,8 +25,8 @@ def is_excluded(col):
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
-                  'name', 'direction', 'undetermined', 'tmm', 'chr', 'null', 'id',
-                  'genome', 'pos', 'end', 'alias', 'accession']
+                  'name', 'direction', 'undetermined', 'tmm', 'chr', 'id',
+                  'genome', 'pos', 'alias', 'accession', 'threshold']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -100,7 +100,7 @@ def read_compressed_file(path, extension):
         from io import StringIO
         
         # This one is best if there are no headers:
-        # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
+        df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols + 1), skiprows=1, header=None, names=header)
@@ -112,9 +112,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        df = pd.read_csv(path, dtype=str, sep=split_char)
-        # Clean headers comment this out if you comment out the one above
-        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        # df = pd.read_csv(path, dtype=str, sep=split_char, skiprows=[1])
+        # # Clean headers comment this out if you comment out the one above
+        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -169,9 +169,9 @@ def process_file(file, extension):
     # Prepare column names and input rows
     for col in value_cols:
         # Switch to {sample_name} if sample names are filenames
-        # column_id = f"{sample_name}"
-        column_id = f"{col}"
-        # if col == "TNFa":
+        column_id = f"{sample_name}"
+        # column_id = f"{col}"
+        # if col == "tnfa" or col == "null":
         #     column_id = f"{col}_{sample_name}"
         # else:
         #     column_id = f"{col}"
@@ -249,9 +249,9 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                # column_id = f"{sample_name}"
-                column_id = f"{col}"
-                # if col == "tnfa":
+                column_id = f"{sample_name}"
+                # column_id = f"{col}"
+                # if col == "tnfa" or col == "null":
                 #     column_id = f"{col}_{sample_name}"
                 # else:
                 #     column_id = f"{col}"
@@ -320,6 +320,7 @@ if __name__ == "__main__":
                            .replace("filtered", "").split("/")[-1]
                            .replace(".featureCounts", "")
                            )
+        #                  .split('_')[-1].strip()
         # column_order[x] = column_order[x].replace("GSE17900", "")
         # column_order[x] = column_order[x].split(':')[0].split('_')[0].split("/")[-1]
     print(column_order)
