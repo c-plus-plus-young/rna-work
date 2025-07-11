@@ -13,7 +13,7 @@ improper_columns = "improper_columns.txt"
 
 # Helper to strip extra metadata columns
 def is_excluded(col):
-    # may need to add 'total', 'end', 'null', 'gene', 'go', 'pos', 'end', and 'ec' - but leaving them off bc ec was in infected which is needed
+    # may need to add 'total', 'end', 'null', 'gene', 'go', 'pos', 'end', 'id', and 'ec' - but leaving them off bc ec was in infected which is needed
     exclusions = ['gene_name', 'gene_chr', 'gene_start', 'gene_end', 'strand',
                   'gene_length', 'gene_biotype', 'gene_description', 'locus', 'family',
                   'description', 'fpkm', 'ensembl', 'symbol', 'deseq', 'annotation',
@@ -25,11 +25,14 @@ def is_excluded(col):
                   'gene_type', 'expression', 'gene-name', 'width', 'transcript', 
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
-                  'name', 'direction', 'undetermined', 'tmm', 'chr', 'id',
-                  'genome', 'pos', 'alias', 'accession', 'threshold']
+                  'name', 'direction', 'undetermined', 'tmm', 'chr', 
+                  'genome', 'alias', 'accession', 'threshold', 'end']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
+
+    # return [x for x in col if x.lower().strip() != 'read count']
+
 
 def read_compressed_file(path, extension):
     # Read file into DataFrame
@@ -100,7 +103,7 @@ def read_compressed_file(path, extension):
         from io import StringIO
         
         # This one is best if there are no headers:
-        df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
+        # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols + 1), skiprows=1, header=None, names=header)
@@ -112,9 +115,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        # df = pd.read_csv(path, dtype=str, sep=split_char, skiprows=[1])
-        # # Clean headers comment this out if you comment out the one above
-        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        df = pd.read_csv(path, dtype=str, sep=split_char)
+        # Clean headers comment this out if you comment out the one above
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -169,8 +172,8 @@ def process_file(file, extension):
     # Prepare column names and input rows
     for col in value_cols:
         # Switch to {sample_name} if sample names are filenames
-        column_id = f"{sample_name}"
-        # column_id = f"{col}"
+        # column_id = f"{sample_name}"
+        column_id = f"{col}"
         # if col == "tnfa" or col == "null":
         #     column_id = f"{col}_{sample_name}"
         # else:
@@ -249,8 +252,8 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                column_id = f"{sample_name}"
-                # column_id = f"{col}"
+                # column_id = f"{sample_name}"
+                column_id = f"{col}"
                 # if col == "tnfa" or col == "null":
                 #     column_id = f"{col}_{sample_name}"
                 # else:
@@ -262,7 +265,7 @@ def process_file(file, extension):
                     counts[identifier][column_id] = counts[identifier].get(column_id, 0) + int(float(val))
                 except ValueError:
                 # else:
-                    print("NAN error in line " + row + " column " + col)
+                    # print("NAN error in line " + row + " column " + col)
                     counts[identifier][column_id] = 0
         else:
             improper_row.append((identifier, sample_name))
