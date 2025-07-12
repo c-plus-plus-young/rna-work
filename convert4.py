@@ -26,7 +26,7 @@ def is_excluded(col):
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
                   'name', 'direction', 'undetermined', 'tmm', 'chr', 
-                  'genome', 'alias', 'accession', 'threshold', 'end']
+                  'genome', 'alias', 'accession', 'threshold',]
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -103,7 +103,7 @@ def read_compressed_file(path, extension):
         from io import StringIO
         
         # This one is best if there are no headers:
-        # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
+        df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols + 1), skiprows=1, header=None, names=header)
@@ -115,9 +115,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        df = pd.read_csv(path, dtype=str, sep=split_char)
-        # Clean headers comment this out if you comment out the one above
-        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        # df = pd.read_csv(path, dtype=str, sep=split_char)
+        # # Clean headers comment this out if you comment out the one above
+        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -231,6 +231,8 @@ def process_file(file, extension):
             and not identifier.replace("\"", "").startswith("MERGE")
             and not identifier.replace("\"", "").startswith("NEG")
             and not identifier.replace("\"", "").startswith("POS")
+            and not identifier.replace("\"", "").startswith("V_")
+            and not identifier.replace("\"", "").startswith("SEPT")
             and not identifier == ""
             and not "Rik" in identifier
             and not "no" in identifier
@@ -244,6 +246,8 @@ def process_file(file, extension):
             and not ("orf") in identifier):
 
             identifier = identifier.split("|")[-1].replace("\"", "")
+
+            # identifier = identifier.split("_")[-1]
 
             if identifier.split(".")[-1].isdigit:
                 identifier = identifier.split(".")[0]
@@ -322,6 +326,7 @@ if __name__ == "__main__":
                            .replace(":read count", "").replace(".sam", "")
                            .replace("filtered", "").split("/")[-1]
                            .replace(".featureCounts", "")
+                           .replace("100_", "").replace(".ReadsPerGene", "")
                            )
         #                  .split('_')[-1].strip()
         # column_order[x] = column_order[x].replace("GSE17900", "")
