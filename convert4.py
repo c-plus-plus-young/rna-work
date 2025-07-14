@@ -26,7 +26,7 @@ def is_excluded(col):
                   'coverage', 'ref', 'uniprot', 'position', 'symbol', 'description',
                   'Gene Name', 'Gene Alias', 'geneid', 'genename', 'refseq',
                   'name', 'direction', 'undetermined', 'tmm', 'chr', 
-                  'genome', 'alias', 'accession', 'threshold',]
+                  'genome', 'alias', 'accession', 'threshold', 'total']
     if any(x in col.lower() for x in exclusions):
         print(col)
     return any(x in col.lower() for x in exclusions)
@@ -103,7 +103,7 @@ def read_compressed_file(path, extension):
         from io import StringIO
         
         # This one is best if there are no headers:
-        df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
+        # df = pd.read_csv(StringIO(''.join(lines)), dtype=str, sep=split_char, header=None, names=["Gene", str(path).split("/")[-1]])
 
         # Good for misaligned header (too few columns in header)
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, usecols=range(0, number_of_cols + 1), skiprows=1, header=None, names=header)
@@ -115,9 +115,9 @@ def read_compressed_file(path, extension):
         # df = pd.read_csv(StringIO(''.join(lines)), sep=split_char, dtype=str, header=None, names=header)
 
         # This is the best one for most data files - , skiprows=1, usecols=range(1, number_of_cols -1)
-        # df = pd.read_csv(path, dtype=str, sep=split_char)
-        # # Clean headers comment this out if you comment out the one above
-        # df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
+        df = pd.read_csv(path, dtype=str, sep=split_char)
+        # Clean headers comment this out if you comment out the one above
+        df.columns = df.columns.str.strip().str.replace('"', '', regex=False)
         
         return df
 
@@ -156,9 +156,9 @@ def process_file(file, extension):
     # data_file.columns = data_file.columns.str.strip()
 
     # Gene identifier is likely first column, 0
-    gene_col = data_file.columns[0]
+    gene_col = data_file.columns[5]
     # Value columns are all other columns
-    value_cols = [col for col in data_file.columns[1:] if not is_excluded(col)]
+    value_cols = [col for col in data_file.columns[0:] if not is_excluded(col)]
     # improper_column_list = [col for col in data_file.columns[1:] if is_excluded(col)]
     # for item in improper_column_list:
     #     improper_column.append(item)
@@ -172,8 +172,8 @@ def process_file(file, extension):
     # Prepare column names and input rows
     for col in value_cols:
         # Switch to {sample_name} if sample names are filenames
-        # column_id = f"{sample_name}"
-        column_id = f"{col}"
+        column_id = f"{sample_name}"
+        # column_id = f"{col}"
         # if col == "tnfa" or col == "null":
         #     column_id = f"{col}_{sample_name}"
         # else:
@@ -256,8 +256,8 @@ def process_file(file, extension):
                 counts[identifier] = {}
                 all_genes.append(identifier)
             for col in value_cols:
-                # column_id = f"{sample_name}"
-                column_id = f"{col}"
+                column_id = f"{sample_name}"
+                # column_id = f"{col}"
                 # if col == "tnfa" or col == "null":
                 #     column_id = f"{col}_{sample_name}"
                 # else:

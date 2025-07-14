@@ -8,6 +8,7 @@ Float not int:
 249837
 274114
 233557
+123029
 
 miRna only:
 145954
@@ -30,3 +31,6 @@ Column IDs are just numbers:
 185700
 151135
 165727
+
+No information on which data columns are usable:
+174317
